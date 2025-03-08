@@ -1,0 +1,18 @@
+modules:
+  jira:adminPage:
+    - key: assemble-hello-world-admin-page
+      resource: main
+      resolver:
+        function: resolver
+      render: native
+      title: assemble
+  function:
+    - key: resolver
+      handler: index.handler
+resources:
+  - key: main
+    path: src/frontend/index.jsx
+app:
+  runtime:
+    name: nodejs22.x
+  id: ari:cloud:ecosystem::app/ae1ddc95-9855-4a3f-8d5f-18e435f00562
