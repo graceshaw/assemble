@@ -1,18 +1,22 @@
 modules:
-  jira:adminPage:
-    - key: assemble-hello-world-admin-page
-      resource: main
-      resolver:
-        function: resolver
-      render: native
-      title: assemble
+  jira:adminPages:
+    - key: probabilistic-forecasting-page
+      title: Probabilistic Forecasting
+      route: forecasting
   function:
-    - key: resolver
-      handler: index.handler
-resources:
-  - key: main
-    path: src/frontend/index.jsx
+    - key: monte-carlo-api
+      handler: index.monteCarlo
+  trigger:
+    - key: issue-created-trigger
+      function: issue-created
+      events:
+        - avi:jira:created:issue
+permissions:
+  scopes:
+    - read:jira-work
+    - write:jira-work
+    - read:sprint:jira-software
+    - read:issue:jira-software
 app:
-  runtime:
-    name: nodejs22.x
-  id: ari:cloud:ecosystem::app/ae1ddc95-9855-4a3f-8d5f-18e435f00562
+  id: ari:cloud:ecosystem::app/my-probabilistic-forecasting-app
+  name: Probabilistic Forecasting for Jira
