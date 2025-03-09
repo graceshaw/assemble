@@ -2,7 +2,7 @@
 
 Perform probabilistic forecasting (Monte Carlo simulation) for your Jira project. Made with Claude.ai.
 
-![alt text](https://github.com/graceshaw/assemble/blob/main/src/jira_forecast.jpg?raw=true)
+![alt text](https://github.com/graceshaw/assemble/blob/main/src/jira_forecast.png)
 
 ## Pre-requisites
 
