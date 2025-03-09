@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 import seaborn as sns
 from tqdm import tqdm
+import matplotlib.dates as mdates
 
 def load_jira_data(file_path):
     """
@@ -105,13 +106,13 @@ def run_monte_carlo(completed_issues, remaining_issues, num_simulations=1000,
             periods_needed = np.searchsorted(cumulative_work, remaining_count, side='left')
             
             if periods_needed < len(cumulative_work):
-                # Convert periods to days
+                # Convert periods to days - FIX: Convert numpy.int64 to Python int
                 if throughput_period == 'W':
-                    days_to_add = periods_needed * 7
+                    days_to_add = int(periods_needed * 7)
                 elif throughput_period == 'M':
-                    days_to_add = periods_needed * 30
+                    days_to_add = int(periods_needed * 30)
                 else:
-                    days_to_add = periods_needed
+                    days_to_add = int(periods_needed)
                 
                 completion_date = today + timedelta(days=days_to_add)
                 completion_dates.append(completion_date)
@@ -154,6 +155,11 @@ def visualize_results(results):
     ax.set_xlabel('Completion Date')
     ax.set_ylabel('Frequency')
     
+    # Fix x-axis date formatting to prevent squishing
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+    ax.xaxis.set_major_locator(mdates.WeekdayLocator(interval=2))  # Show every 2 weeks
+    plt.setp(ax.xaxis.get_majorticklabels(), rotation=45, ha='right')  # Rotate labels
+    
     # Add percentile lines
     percentiles = results['percentiles']
     for percent, date in percentiles.items():
@@ -176,6 +182,16 @@ def visualize_results(results):
     ax.set_xlabel('Period')
     ax.set_ylabel('Items Completed')
     
+    # Fix x-axis date formatting for throughput
+    if len(results['throughput']) > 10:
+        # If too many periods, show every nth label
+        interval = max(1, len(results['throughput']) // 10)
+        for i, label in enumerate(ax.get_xticklabels()):
+            if i % interval != 0:
+                label.set_visible(False)
+    
+    plt.setp(ax.xaxis.get_majorticklabels(), rotation=45, ha='right')  # Rotate labels
+    
     # Plot 4: Cumulative Probability of Completion
     ax = axs[1, 1]
     dates = pd.Series(results['completion_dates'])
@@ -184,6 +200,11 @@ def visualize_results(results):
     ax.set_title('Cumulative Probability of Completion')
     ax.set_xlabel('Date')
     ax.set_ylabel('Probability')
+    
+    # Fix x-axis date formatting for cumulative probability
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+    ax.xaxis.set_major_locator(mdates.WeekdayLocator(interval=2))  # Show every 2 weeks
+    plt.setp(ax.xaxis.get_majorticklabels(), rotation=45, ha='right')  # Rotate labels
     
     plt.tight_layout()
     plt.savefig('jira_forecast.png')
